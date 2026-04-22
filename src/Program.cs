@@ -1,5 +1,6 @@
-﻿using System.Threading.Tasks;
-using BenCore.Core;
+﻿using BenCore.Core;
+using BenCore.IoC;
+using BenCore.Repositories;
 
 namespace BenCore
 {
@@ -7,7 +8,11 @@ namespace BenCore
     {
         static async Task Main(string[] args)
         {
-            BenCoreHost host = new BenCoreHost(5000);
+            DependencyContainer container = new DependencyContainer();
+
+            container.Register<IUsuarioRepository, UsuarioRepository>();
+
+            BenCoreHost host = new BenCoreHost(container, 5000);
             await host.StartAsync();
         }
     }

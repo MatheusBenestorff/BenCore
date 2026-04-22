@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using Torff.Ttp;
 using BenCore.Mvc;
+using BenCore.IoC;
 
 
 namespace BenCore.Core
@@ -13,11 +14,13 @@ namespace BenCore.Core
     {
         private readonly int _port;
         private readonly RouteScanner _scanner;
+        private readonly DependencyContainer _container;
 
-        public BenCoreHost(int port = 5000)
+        public BenCoreHost(DependencyContainer container, int port = 5000)
         {
             _port = port;
             _scanner = new RouteScanner();
+            _container = container;
         }
 
         public async Task StartAsync()
@@ -63,7 +66,7 @@ namespace BenCore.Core
                     {
                         Type controllerType = methodInfo.DeclaringType;
 
-                        BenController controllerInstance = (BenController)Activator.CreateInstance(controllerType);
+                        BenController controllerInstance = (BenController)_container.Resolve(controllerType);
 
                         controllerInstance.Request = request;
 
