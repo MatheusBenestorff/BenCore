@@ -4,20 +4,26 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Text.Json;
 using Torff.Ttp;
+using BenCore.Mvc;
+
 
 namespace BenCore.Core
 {
     public class BenCoreHost
     {
         private readonly int _port;
+        private readonly RouteScanner _scanner;
 
         public BenCoreHost(int port = 5000)
         {
             _port = port;
+            _scanner = new RouteScanner();
         }
 
         public async Task StartAsync()
         {
+            _scanner.Scan();
+            
             TcpListener listener = new TcpListener(IPAddress.Any, _port);
             listener.Start();
             
