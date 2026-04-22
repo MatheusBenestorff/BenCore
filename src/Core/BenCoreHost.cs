@@ -55,14 +55,35 @@ namespace BenCore.Core
                     Console.WriteLine($"[BenCore] Route: {request.Method} {request.Path}");
                     Console.WriteLine($"[BenCore] Screening: {request.RequestId}");
 
-                    string corpoResposta = $@"{{ ""mensagem"": ""Olá do BenCore!"", ""rota"": ""{request.Path}"" }}";
+                    string routeKey = $"{request.Method.ToUpper()}|{request.Path}";
 
-                    TtpResponse response = new TtpResponse
+                    TtpResponse response;
+
+                    if (_scanner.Routes.TryGetValue(routeKey, out System.Reflection.MethodInfo methodInfo))
                     {
-                        StatusCode = 200,
-                        ContentType = "application/json",
-                        Body = Encoding.UTF8.GetBytes(corpoResposta)
-                    };
+                        Type controllerType = methodInfo.DeclaringType;
+
+                        BenController controllerInstance = (BenController)Activator.CreateInstance(controllerType);
+
+                        controllerInstance.Request = request;
+
+                        response = (TtpResponse)methodInfo.Invoke(controllerInstance, null);
+                        
+                        Console.WriteLine($"[BenCore] Sucess: {controllerType.Name}.{methodInfo.Name}() Invoked!");
+                    }
+                    else
+                    {
+                        // Rota não encontrada no mapa! 
+                        Console.WriteLine($"[BenCore] 404 Error: Route Not Foud.");
+                        
+                        string jsonErro = JsonSerializer.Serialize(new { erro = "Route Not Foud in BenCore" });
+                        response = new TtpResponse
+                        {
+                            StatusCode = 404,
+                            ContentType = "application/json",
+                            Body = Encoding.UTF8.GetBytes(jsonErro)
+                        };
+                    }
 
                     string jsonResponse = JsonSerializer.Serialize(response);
                     byte[] responseBytes = Encoding.UTF8.GetBytes(jsonResponse);
