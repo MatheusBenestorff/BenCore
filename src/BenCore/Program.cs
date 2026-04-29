@@ -1,19 +1,38 @@
-﻿using BenCore.Core;
-using BenCore.IoC;
-using BenCore.Repositories;
+﻿using System;
+using System.Threading.Tasks;
+using BenCore.ORM;
+using BenCore.ORM.Providers;
 
 namespace BenCore
 {
+    // 1. Nossa classe de teste (O desenvolvedor cria isso)
+    public class Usuario
+    {
+        public string Nome { get; set; }
+        public string Email { get; set; }
+        public int Idade { get; set; }
+    }
+
     class Program
     {
         static async Task Main(string[] args)
         {
-            DependencyContainer container = new DependencyContainer();
+            Console.WriteLine("Iniciando Teste do BenCore.ORM...");
 
-            container.Register<IUsuarioRepository, UsuarioRepository>();
+            IDbProvider krakenPlugin = new KrakenProvider("localhost", 5432);
+            BenContext db = new BenContext(krakenPlugin);
 
-            BenCoreHost host = new BenCoreHost(container, 5000);
-            await host.StartAsync();
+            Usuario novoUser = new Usuario 
+            { 
+                Nome = "Linus Torvalds", 
+                Email = "linus@linux.org", 
+                Idade = 54 
+            };
+
+            string resultado = await db.InsertAsync(novoUser);
+
+            Console.WriteLine($"\n[Resposta do Banco]: {resultado}");
+            
         }
     }
 }
