@@ -1,7 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Torff\src\Torff.Ttp\Torff.Ttp.csproj" />
+    <ProjectReference Include="..\..\..\Torff\src\Torff.Ttp\Torff.Ttp.csproj" />
+    <ProjectReference Include="..\BenCore.ORM\BenCore.ORM.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
