@@ -1,15 +1,19 @@
-using System.Reflection;
+using System.Threading.Tasks;
 using BenCore.ORM.Providers;
+using BenCore.ORM.Translation;
 
 namespace BenCore.ORM
 {
     public class BenContext
     {
         private readonly IDbProvider _provider;
+        private readonly ISqlTranslator _translator;
 
         public BenContext(IDbProvider provider)
         {
             _provider = provider;
+            
+            _translator = new DefaultSqlTranslator(); 
         }
 
         public async Task<string> ExecuteRawSqlAsync(string sqlQuery)
@@ -17,22 +21,9 @@ namespace BenCore.ORM
             return await _provider.ExecuteQueryAsync(sqlQuery);
         }
 
-        public async Task<string> InsertAsync<T>(T entity)
+        public BenSet<T> Set<T>() where T : class
         {
-            Type type = typeof(T);
-            
-            string tableName = type.Name + "s"; 
-
-            PropertyInfo[] properties = type.GetProperties();
-
-            var values = properties.Select(p => p.GetValue(entity)?.ToString() ?? "");
-            string dataToInsert = string.Join(" - ", values);
-
-            string sqlQuery = $"INSERT INTO {tableName} VALUES ('{dataToInsert}')";
-
-            Console.WriteLine($"[BenCore.ORM] Query Gerada: {sqlQuery}");
-
-            return await _provider.ExecuteQueryAsync(sqlQuery);
+            return new BenSet<T>(_provider, _translator);
         }
     }
 }

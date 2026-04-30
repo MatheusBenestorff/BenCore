@@ -5,7 +5,6 @@ using BenCore.ORM.Providers;
 
 namespace BenCore
 {
-    // 1. Nossa classe de teste (O desenvolvedor cria isso)
     public class Usuario
     {
         public string Nome { get; set; }
@@ -24,12 +23,13 @@ namespace BenCore
 
             Usuario novoUser = new Usuario 
             { 
-                Nome = "Linus Torvalds", 
-                Email = "linus@linux.org", 
-                Idade = 54 
+                Nome = "Ada Lovelace", 
+                Email = "ada@computing.com", 
+                Idade = 36 
             };
 
-            string resultado = await db.InsertAsync(novoUser);
+            var tabelaUsuarios = db.Set<Usuario>();
+            string resultado = await tabelaUsuarios.InsertAsync(novoUser);
 
             Console.WriteLine($"\n[Resposta do Banco]: {resultado}");
             
