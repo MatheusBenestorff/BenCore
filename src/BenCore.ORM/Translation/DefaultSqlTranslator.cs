@@ -1,26 +1,18 @@
-using System.Reflection;
-
 namespace BenCore.ORM.Translation
 {
     public class DefaultSqlTranslator : ISqlTranslator
     {
-        public string GenerateInsert<T>(T entity)
+        private readonly InsertGenerator _insertGenerator = new InsertGenerator();
+        private readonly SelectGenerator _selectGenerator = new SelectGenerator();
+
+        public string GenerateInsert<T>(T entity) where T : class
         {
-            Type type = typeof(T);
-            string tableName = type.Name + "s"; 
-
-            PropertyInfo[] properties = type.GetProperties();
-            var values = properties.Select(p => p.GetValue(entity)?.ToString() ?? "");
-            string dataToInsert = string.Join(" - ", values);
-
-            return $"INSERT INTO {tableName} VALUES ('{dataToInsert}')";
+            return _insertGenerator.Generate(entity);
         }
 
-        public string GenerateSelect<T>()
+        public string GenerateSelect<T>() where T : class
         {
-            Type type = typeof(T);
-            string tableName = type.Name + "s";
-            return $"SELECT * FROM {tableName}";
+            return _selectGenerator.Generate<T>();
         }
     }
 }
