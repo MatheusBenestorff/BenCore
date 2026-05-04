@@ -70,7 +70,16 @@ namespace BenCore.Core
 
                         controllerInstance.Request = request;
 
-                        response = (TtpResponse)methodInfo.Invoke(controllerInstance, null);
+                        var resultado = methodInfo.Invoke(controllerInstance, null);
+
+                        if (resultado is Task<TtpResponse> task)
+                        {
+                            response = await task; 
+                        }
+                        else
+                        {
+                            response = (TtpResponse)resultado;
+                        }
                         
                         Console.WriteLine($"[BenCore] Sucess: {controllerType.Name}.{methodInfo.Name}() Invoked!");
                     }

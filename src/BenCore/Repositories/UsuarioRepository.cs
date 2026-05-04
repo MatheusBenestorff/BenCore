@@ -1,15 +1,25 @@
+using BenCore.ORM;
+
 namespace BenCore.Repositories
 {
     public interface IUsuarioRepository
     {
-        List<string> BuscarNomesNoBanco();
+        Task<List<Usuario>> BuscarTodosAsync();
     }
 
     public class UsuarioRepository : IUsuarioRepository
     {
-        public List<string> BuscarNomesNoBanco()
+        private readonly BenContext _db;
+
+        public UsuarioRepository(BenContext db)
         {
-            return new List<string> { "Matheus", "Torvalds", "Uncle Bob" };
+            _db = db;
+        }
+
+        public async Task<List<Usuario>> BuscarTodosAsync()
+        {
+            return await _db.Set<Usuario>().SelectAsync();
         }
     }
+
 }

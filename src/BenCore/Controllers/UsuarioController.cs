@@ -1,7 +1,7 @@
-using System.Collections.Generic;
 using BenCore.Mvc;
 using BenCore.Repositories;
 using Torff.Ttp;
+
 namespace BenCore.Controllers
 {
     public class UsuarioController : BenController
@@ -14,16 +14,17 @@ namespace BenCore.Controllers
         }
         
         [HttpGet("/api/usuarios")]
-        public TtpResponse ListarTodos()
+        public async Task<TtpResponse> ListarTodos()
         {
-            var dados = _repo.BuscarNomesNoBanco();
+            var dados = await _repo.BuscarTodosAsync();
+            
             return Ok(dados);
         }
 
         [HttpPost("/api/usuarios")]
         public TtpResponse CriarUsuario()
         {
-            return Ok(new { mensagem = "Usuário criado com sucesso no BenCore!" });
+            return Ok(new { mensagem = "Usuário criado com sucesso no KrakenDB!" });
         }
     }
 }

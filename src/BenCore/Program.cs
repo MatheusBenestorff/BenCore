@@ -1,7 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BenCore.IoC;
 using BenCore.ORM;
 using BenCore.ORM.Providers;
+using BenCore.Controllers; 
+using Torff;
+using BenCore.Core;
+using BenCore.Repositories;
 
 namespace BenCore
 {
@@ -16,25 +21,23 @@ namespace BenCore
     {
         static async Task Main(string[] args)
         {
-            Console.WriteLine("Iniciando Teste do BenCore.ORM...");
+            Console.WriteLine("======================================");
+            Console.WriteLine(" INITIALING BENCORE WEB FRAMEWORK   ");
+            Console.WriteLine("======================================");
+
+            var container = new DependencyContainer();
 
             IDbProvider krakenPlugin = new KrakenProvider("localhost", 5432);
-            BenContext db = new BenContext(krakenPlugin);
+            container.RegisterInstance<IDbProvider>(krakenPlugin);
 
-            var tabelaUsuarios = db.Set<Usuario>();
+            container.Register<BenContext, BenContext>();
+            container.Register<IUsuarioRepository, UsuarioRepository>();
+            container.Register<UsuarioController, UsuarioController>();
 
-            Console.WriteLine("Gravando novo usuário...");
-            await tabelaUsuarios.InsertAsync(new Usuario { Nome = "Alan Turing", Email = "alan@enigma.com", Idade = 41 });
-            await tabelaUsuarios.InsertAsync(new Usuario { Nome = "Grace Hopper", Email = "grace@navy.mil", Idade = 85 });
-            
-            Console.WriteLine("\nBuscando todos os usuários do KrakenDB...");
-            List<Usuario> usuariosDoBanco = await tabelaUsuarios.SelectAsync();
-
-            Console.WriteLine("\n--- DADOS RETORNADOS E MAPEADOS COM SUCESSO ---");
-            foreach (var u in usuariosDoBanco)
-            {
-                Console.WriteLine($"Nome: {u.Nome} | E-mail: {u.Email} | Idade: {u.Idade} anos");
-            }
+            int port = 5000;
+            Console.WriteLine($"[Torff] Waking up the Web Server on port {port}...");
+            var server = new BenCoreHost(container,port); 
+            await server.StartAsync();
         }
     }
 }
