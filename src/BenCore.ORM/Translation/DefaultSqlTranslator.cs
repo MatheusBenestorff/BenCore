@@ -15,5 +15,12 @@ namespace BenCore.ORM.Translation
 
             return $"INSERT INTO {tableName} VALUES ('{dataToInsert}')";
         }
+
+        public string GenerateSelect<T>()
+        {
+            Type type = typeof(T);
+            string tableName = type.Name + "s";
+            return $"SELECT * FROM {tableName}";
+        }
     }
 }
