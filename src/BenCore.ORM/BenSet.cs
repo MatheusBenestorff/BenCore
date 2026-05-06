@@ -41,5 +41,12 @@ namespace BenCore.ORM
 
             return new List<T>();
         }
+        
+        public async Task<string> DeleteAsync(T entity)
+        {
+            string sql = _translator.GenerateDelete(entity);
+            System.Console.WriteLine($"[BenCore.ORM] Generated Query: {sql}");
+            return await _provider.ExecuteQueryAsync(sql);
+        }
     }
 }
